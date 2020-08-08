@@ -56,3 +56,25 @@ class PrivteIngriedientApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data[0]['name'], ingriedient.name)
+
+    def test_ingridient_create_succesfoul(self):
+        """Test creating new ingriedient"""
+        payload = {"name": "Paprika"}
+        res = self.client.post(INGRIEDIENT_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        exists = Ingriedient.objects.filter(
+            user=self.user,
+            name=payload['name']
+        ).exists()
+        self.assertTrue(exists)
+
+    def test_ingridient_create_failed(self):
+        """Testing creating ingredient with wrong payload"""
+        payload = {'name': ''}
+        res = self.client.post(INGRIEDIENT_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        exists = Ingriedient.objects.filter(
+            user=self.user,
+            name=payload['name']
+        ).exists()
+        self.assertFalse(exists)
